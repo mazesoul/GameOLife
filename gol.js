@@ -10,19 +10,23 @@
       return cell.split(',').map(Number)
     }
 
-    function neighbors (cell) {
-      var coords = cellToCoords(cell)
+    var memoize = {}
 
-      // Memoize
-      return  [ [coords[0]-1, coords[1]-1].toString()
-              , [coords[0]-1, coords[1]  ].toString()
-              , [coords[0]-1, coords[1]+1].toString()
-              , [coords[0]  , coords[1]-1].toString()
-              , [coords[0]  , coords[1]+1].toString()
-              , [coords[0]+1, coords[1]-1].toString()
-              , [coords[0]+1, coords[1]  ].toString()
-              , [coords[0]+1, coords[1]+1].toString()
-              ]
+    function neighbors (cell) {
+      if (cell in memoize) return memoize[cell];
+
+      var coords = cellToCoords(cell)
+      var neighbors_computed = [ [coords[0]-1, coords[1]-1].toString()
+                               , [coords[0]-1, coords[1]  ].toString()
+                               , [coords[0]-1, coords[1]+1].toString()
+                               , [coords[0]  , coords[1]-1].toString()
+                               , [coords[0]  , coords[1]+1].toString()
+                               , [coords[0]+1, coords[1]-1].toString()
+                               , [coords[0]+1, coords[1]  ].toString()
+                               , [coords[0]+1, coords[1]+1].toString()
+                               ];
+      memoize[cell] = neighbors_computed;
+      return neighbors_computed;
     }
 
 
@@ -121,6 +125,20 @@
                                                        }
                                                      ))
 
+  // for profiling
+  ;!function profilingRun () {
+    var population = gol.next({ '0,1' : 1
+                              , '0,3' : 1
+                              , '1,0' : 1
+                              , '2,1' : 1
+                              });
+    var steps = 100000;
+    console.log('Doing ' + steps + ' for profiling...');
+    while(steps--) {
+      population = gol.next(population);
+    }
+    console.log('Done!');
+  }()
 
   // Create a game population
   ;!function testBlinker () {
